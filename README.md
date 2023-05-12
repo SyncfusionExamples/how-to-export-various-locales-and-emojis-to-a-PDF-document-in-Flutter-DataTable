@@ -3,7 +3,22 @@
 In this article, you will learn how to properly display complex script languages such as Arabic, Hindi, Hebrew, Tamil, and more. This can be achieved by utilizing true type fonts that support the required characters, without relying on open type features like Arial Unicode MS.
 
 ## STEP 1:
-Initialize the [SfDataGrid](https://pub.dev/documentation/syncfusion_flutter_datagrid/latest/datagrid/SfDataGrid-class.html) widget with all the required properties. We can use  [PdfTrueTypeFont](https://pub.dev/documentation/syncfusion_flutter_pdf/latest/pdf/PdfTrueTypeFont-class.html) API to provide the necessary font file. To do this, use the exportToPdfGrid method instead of exportToPdfDocument when exporting the DataGrid. In the exportToPdfGrid method, set the [PdfTrueTypeFont](https://pub.dev/documentation/syncfusion_flutter_pdf/latest/pdf/PdfTrueTypeFont-class.html) to the [PdfGridStyle](https://pub.dev/documentation/syncfusion_flutter_pdf/latest/pdf/PdfGridStyle-class.html).
+Initialize the [SfDataGrid](https://pub.dev/documentation/syncfusion_flutter_datagrid/latest/datagrid/SfDataGrid-class.html) widget with all the required properties. Create a global key and assign it to the [SfDataGrid.key](https://api.flutter.dev/flutter/widgets/Widget/key.html) property. The key is used to retrieve the current state object of the [SfDataGrid](https://pub.dev/documentation/syncfusion_flutter_datagrid/latest/datagrid/SfDataGrid-class.html) widget.
+
+```dart
+final GlobalKey<SfDataGridState> _key = GlobalKey<SfDataGridState>();
+
+Expanded(
+        child: SfDataGrid(
+        source: _employeeDataSource,
+        key: _key,
+        columnWidthMode: ColumnWidthMode.fill,
+        columns: getColumns),
+        )
+
+```
+## STEP 2:
+ We can use  [PdfTrueTypeFont](https://pub.dev/documentation/syncfusion_flutter_pdf/latest/pdf/PdfTrueTypeFont-class.html) API to provide the necessary font file. To do this, use the exportToPdfGrid method instead of exportToPdfDocument when exporting the DataGrid. In the exportToPdfGrid method, set the [PdfTrueTypeFont](https://pub.dev/documentation/syncfusion_flutter_pdf/latest/pdf/PdfTrueTypeFont-class.html) to the [PdfGridStyle](https://pub.dev/documentation/syncfusion_flutter_pdf/latest/pdf/PdfGridStyle-class.html).
 
 ```dart
 import 'package:flutter/material.dart';
