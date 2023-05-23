@@ -2,14 +2,18 @@
 
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // External package imports
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:syncfusion_flutter_datagrid_export/export.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
-import 'helper/save_file_mobile.dart';
+// Local import
+import 'helper/save_file_mobile.dart'
+    if (dart.library.html) 'helper/save_file_web.dart' as helper;
 
 void main() {
   runApp(const MyApp());
@@ -41,7 +45,7 @@ class MyHomePageState extends State<MyHomePage> {
   late EmployeeDataSource _employeeDataSource;
 
   final GlobalKey<SfDataGridState> _key = GlobalKey<SfDataGridState>();
-
+  bool isMobilePlatform = false;
   @override
   void initState() {
     super.initState();
@@ -51,42 +55,54 @@ class MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData themeData = Theme.of(context);
+    isMobilePlatform = themeData.platform == TargetPlatform.android;
     return Scaffold(
         appBar: AppBar(
           title: const Text('SfDatagrid Demo'),
         ),
         body: LayoutBuilder(builder: (context, constraints) {
           return Column(children: [
-            const Padding(padding: EdgeInsets.only(top: 30)),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                SizedBox(
-                  height: 50,
-                  width: 250,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        PdfDocument document = PdfDocument();
-                        PdfPage pdfPage = document.pages.add();
-                        PdfGrid pdfGrid = _key.currentState!.exportToPdfGrid();
-                        PdfGridStyle gridStyle = PdfGridStyle(
-                          font: PdfTrueTypeFont(
-                              File('ARIALUNI.ttf').readAsBytesSync(), 14),
-                        );
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 15),
+              height: 50,
+              width: 250,
+              child: ElevatedButton(
+                  onPressed: () async {
+                    PdfDocument document = PdfDocument();
+                    PdfPage pdfPage = document.pages.add();
+                    PdfGrid pdfGrid = _key.currentState!.exportToPdfGrid();
+                    PdfTrueTypeFont pdfTrueTypeFont;
+                    const String webFileLocation = 'fonts/ARIALUNI.TTF';
+                    const String androidFileLocation =
+                        'assets/fonts/ARIALUNI.TTF';
 
-                        pdfGrid.rows.applyStyle(gridStyle);
-                        pdfGrid.draw(
-                          page: pdfPage,
-                          bounds: const Rect.fromLTWH(0, 0, 0, 0),
-                        );
-                        final List<int> bytes = document.saveSync();
+                    if (kIsWeb || isMobilePlatform) {
+                      ByteData byte = await rootBundle.load(isMobilePlatform
+                          ? androidFileLocation
+                          : webFileLocation);
+                      pdfTrueTypeFont =
+                          PdfTrueTypeFont(byte.buffer.asUint8List(), 14);
+                    } else {
+                      pdfTrueTypeFont = PdfTrueTypeFont(
+                          File('assets/fonts/ARIALUNI.TTF').readAsBytesSync(),
+                          14);
+                    }
 
-                        saveAndLaunchFile(bytes, 'datagrid-pdf.pdf');
-                      },
-                      child: const Text('Export DataGrid to PDF')),
-                ),
-              ],
+                    PdfGridStyle gridStyle = PdfGridStyle(
+                      font: pdfTrueTypeFont,
+                    );
+
+                    pdfGrid.rows.applyStyle(gridStyle);
+                    pdfGrid.draw(
+                      page: pdfPage,
+                      bounds: const Rect.fromLTWH(0, 0, 0, 0),
+                    );
+                    final List<int> bytes = document.saveSync();
+
+                    helper.saveAndLaunchFile(bytes, 'datagrid_pdf.pdf');
+                  },
+                  child: const Text('Export DataGrid to PDF')),
             ),
             Expanded(
               child: SfDataGrid(
