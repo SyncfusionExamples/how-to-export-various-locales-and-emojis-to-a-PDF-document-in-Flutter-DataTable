@@ -14,10 +14,10 @@ Future<void> saveAndLaunchFile(List<int> bytes, String fileName) async {
       Platform.isIOS ||
       Platform.isLinux ||
       Platform.isWindows) {
-   if (Platform.isAndroid) {
+    if (Platform.isAndroid) {
       final Directory? directory =
           await path_provider.getExternalStorageDirectory();
-      if (Platform.isAndroid && directory != null) {
+      if (directory != null) {
         path = directory.path;
       }
     } else {
