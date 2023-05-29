@@ -71,8 +71,16 @@ class MyHomePageState extends State<MyHomePage> {
                   onPressed: () async {
                     PdfDocument document = PdfDocument();
                     PdfPage pdfPage = document.pages.add();
-                    PdfGrid pdfGrid = _key.currentState!.exportToPdfGrid();
+                    PdfGrid pdfGrid = _key.currentState!.exportToPdfGrid(
+                      // Set the text direction as PdfTextDirection.rightToLeft for the cell only for RTL languages.
+                      cellExport: (details) {
+                        details.pdfCell.stringFormat = PdfStringFormat(
+                            textDirection: PdfTextDirection.rightToLeft,
+                            alignment: PdfTextAlignment.right);
+                      },
+                    );
                     PdfTrueTypeFont pdfTrueTypeFont;
+                    // Use 'seguiemj.ttf' instead 'ARIALUNI.ttf' to export both font and emoji characters.
                     const String webFileLocation = 'fonts/ARIALUNI.TTF';
                     const String androidFileLocation =
                         'assets/fonts/ARIALUNI.TTF';
@@ -118,45 +126,50 @@ class MyHomePageState extends State<MyHomePage> {
   List<GridColumn> get getColumns {
     return <GridColumn>[
       GridColumn(
-          columnName: 'पहचान',
+          columnName: 'العيد',
           label: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.center,
               child: const Text(
-                'पहचान',
+                'العيد',
               ))),
       GridColumn(
-          columnName: 'नाम',
+          columnName: 'اسم',
           label: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.center,
-              child: const Text('नाम'))),
+              child: const Text('اسم'))),
       GridColumn(
-          columnName: 'पद',
+          columnName: 'تعيين',
           width: 110,
           label: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.center,
               child: const Text(
-                'पद',
+                'تعيين',
                 overflow: TextOverflow.ellipsis,
               ))),
       GridColumn(
-          columnName: 'वेतन',
+          columnName: 'مرتب',
           label: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.center,
-              child: const Text('वेतन'))),
+              child: const Text('مرتب'))),
     ];
   }
 
   List<Employee> populateData() {
     return [
-      Employee(10001, 'जेम्स', 'प्रमुख', 20000),
-      Employee(10002, 'कॅथ्रीन', 'प्रबंधक', 30000),
-      Employee(10003, 'लारा', 'डेवलपर', 15000),
-      Employee(10004, 'माइकल', 'डिजाइनर', 15000),
-      Employee(10005, 'मार्टिन', 'डेवलपर', 15000),
+      Employee(10001, 'محمد', 'مهندس برمجيات', 20000),
+      Employee(10002, 'أحمد', 'مصمم ويب', 30000),
+      Employee(10003, 'علي', 'مهندس برمجيات', 15000),
+      Employee(10004, 'أمير', 'مهندس شبكات', 15000),
+      Employee(10005, 'فاطمة', 'مهندس برمجيات', 15000),
+      Employee(10006, 'سارة', 'مصمم ويب', 15000),
+      Employee(10007, 'ياسمين', 'مهندس برمجيات', 15000),
+      Employee(10008, 'عبد الله', 'مهندس شبكات', 15000),
+      Employee(10009, 'ليلى', 'مصمم ويب', 15000),
+      Employee(10010, 'طارق', 'مهندس شبكات', 15000)
     ];
   }
 }
@@ -169,10 +182,10 @@ class EmployeeDataSource extends DataGridSource {
   void buildDataGridRow(List<Employee> employeeData) {
     dataGridRow = employeeData.map<DataGridRow>((employee) {
       return DataGridRow(cells: [
-        DataGridCell<int>(columnName: 'पहचान', value: employee.id),
-        DataGridCell<String>(columnName: 'नाम', value: employee.name),
-        DataGridCell<String>(columnName: 'पद', value: employee.designation),
-        DataGridCell<int>(columnName: 'वेतन', value: employee.salary),
+        DataGridCell<int>(columnName: 'العيد', value: employee.id),
+        DataGridCell<String>(columnName: 'اسم', value: employee.name),
+        DataGridCell<String>(columnName: 'تعيين', value: employee.designation),
+        DataGridCell<int>(columnName: 'مرتب', value: employee.salary),
       ]);
     }).toList();
   }
